@@ -166,7 +166,7 @@ def decode_data(contract_address, data, blockchain):
     try:
         contract_name = contract.functions.symbol().call()
     except:
-        contract_name = ChainExplorer(blockchain).get_impl_address(contract_address)
+        contract_name = ChainExplorer(blockchain).get_contract_name(contract_address)
 
     entry = {
         'targetAddress': contract_address,
