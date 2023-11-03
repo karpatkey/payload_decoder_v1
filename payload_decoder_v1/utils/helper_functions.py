@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 import os
 
+LABELS_FILE = Path(__file__).parent / "labels.json"
+
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -81,9 +83,19 @@ def get_function_description(function_signature, components_names):
     return func_desc
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# get_labels
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+def get_labels():
+    with open(LABELS_FILE, 'r') as labels_file:
+        # Reading from json file
+        labels = json.load(labels_file)
+    
+    return labels
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # decode_data
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-def decode_data(contract_address, data, blockchain):
+def decode_data(contract_address, data, blockchain, labels):
     web3 = get_node(blockchain)
     
     # If the contract does not have the function, it checks if there is a proxy implementation
@@ -140,8 +152,8 @@ def decode_data(contract_address, data, blockchain):
                         signature = 'allow(address,bool)'
                         description = 'allow(address manager, bool isAllowed_)'
                     else:
-                        signature = 'not found'
-                        description = 'not found'
+                        signature = 'Unknown'
+                        description = 'Unknown'
 
                 func_params['functionSig'] = {
                     'selector': selector,
@@ -168,12 +180,21 @@ def decode_data(contract_address, data, blockchain):
     except:
         contract_name = ChainExplorer(blockchain).get_contract_name(contract_address)
 
+    params = {}
+    for func_param in func_params:
+        params[func_param] = func_params[func_param]
+        if web3.is_address(func_params[func_param]):
+            try:
+                params[func_param+'Name'] = labels[blockchain][str(func_params[func_param]).lower()]['label']
+            except:
+                params[func_param+'Name'] = 'Unknown'
+
     entry = {
         'targetAddress': contract_address,
         'contractName': contract_name,
         'functionSignature': func_sig,
         'functionDescription': func_desc,
-        'params': func_params,
+        'params': params,
     }
 
     return entry
