@@ -95,7 +95,7 @@ def get_labels():
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # decode_data
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-def decode_data(contract_address, data, blockchain, labels):
+def decode_data(contract_address, data, blockchain, id, labels):
     web3 = get_node(blockchain)
     
     # If the contract does not have the function, it checks if there is a proxy implementation
@@ -190,6 +190,7 @@ def decode_data(contract_address, data, blockchain, labels):
                 params[func_param+'Name'] = 'Unknown'
 
     entry = {
+        'id': id,
         'targetAddress': contract_address,
         'contractName': contract_name,
         'functionSignature': func_sig,

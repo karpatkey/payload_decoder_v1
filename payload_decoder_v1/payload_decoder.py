@@ -19,8 +19,10 @@ with open(path, 'r') as payload_file:
 
 labels = get_labels()
 
+id = 1
 for txn in tqdm(payload_data['transactions']):
-    result.append(decode_data(txn['to'], txn['data'], Chain.ETHEREUM, labels))
+    result.append(decode_data(txn['to'], txn['data'], Chain.ETHEREUM, id, labels))
+    id += 1
 
 print()
 
