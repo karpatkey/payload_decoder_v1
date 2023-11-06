@@ -36,7 +36,7 @@ Thanks to [p2p.org](https://p2p.org/) for the entities concept.
 ## Roles.sol
 
 ​
-Contains the functions that are exposed to being called by an Ethereum account. For creating/modifying/eliminating permissions granted to the Pilot account, `scoping` functions are called in the Roles contract deployed by the Avatar Safe (and can only be called by the owner).
+Contains the functions that are exposed to being called by an Ethereum account. For creating/modifying/eliminating permissions granted to the Pilot account, `scoping` functions are called in the Roles contract deployed by the Avatar Safe (and can only be called by the owner).<br>
 ​
 This functions, their parameters and their execution consequences can be found in the [Roles Modifier v1](https://github.com/gnosis/zodiac-modifier-roles-v1) repo and in each of the contract deployments made by Avatar's implementing the standard.
 ​
@@ -158,15 +158,11 @@ function scopeParameterAsOneOf(
 
 ## Payload Decoder v1 Configuration
 
-​
-
 - Install the python dev dependencies: `pip install -r requirements.txt` - while located in the directory containing the library
 - Follow the `Configuration` options for [defyes](https://github.com/karpatkey/defyes) installed as required package - First you will have to modify the [config.json](https://github.com/KarpatkeyDAO/defyes/blob/main/defyes/config.json) - You should provide `RPC` endpoints and `EXPLORER API KEYS` - You should set the env `CONFIG_PATH` env with the config.json's absolute path or the config.json can be placed under default package path `/path/to/python/site-packages/defyes/config.json`
   ​
 
 ## Usage
-
-​
 
 - Run the script with the command `python payload_decoder_v1/payload_decoder.py`
 - Provide the `path` to the JSON file (you will be asked for it)
