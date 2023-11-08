@@ -5,8 +5,12 @@ import requests
 import json
 from pathlib import Path
 import os
+from dune_client.client import DuneClient
+from dune_client.query import QueryBase
+
 
 LABELS_FILE = Path(__file__).parent / "labels.json"
+DUNE_LABELS_FILE = Path(__file__).parent / "dune_labels.json"
 
 class bcolors:
     HEADER = '\033[95m'
@@ -83,19 +87,51 @@ def get_function_description(function_signature, components_names):
     return func_desc
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# get_labels
+# get_api_keys_from_config
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-def get_labels():
-    with open(LABELS_FILE, 'r') as labels_file:
-        # Reading from json file
-        labels = json.load(labels_file)
+def get_api_keys_from_config():
+    config_path = os.environ.get("DECODER_CONFIG_PATH")
+
+    if config_path and Path(config_path).exists():
+        config_file = Path(config_path)
+    else:
+        current_dir = Path(__file__).resolve().parent
+        config_file = current_dir / "config.json"
+
+    with open(config_file) as json_file:
+        config = json.load(json_file)
     
-    return labels
+    return config["apikeys"]
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# dune_query():
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+def dune_query():
+    dune_labels = {}
+
+    query = QueryBase(
+    name="Ethereum - Identifier Labels",
+    query_id=3173156)
+
+    config_api_keys = get_api_keys_from_config()
+
+    try:
+        results = DuneClient(config_api_keys["dune"]).run_query(query)
+        for row in results.result.rows:
+            dune_labels[row['address'].lower()] = row['name']
+        
+        with open(DUNE_LABELS_FILE, 'w') as dune_labels_file:
+            json.dump(dune_labels, dune_labels_file, indent=4)
+    except:
+        with open(DUNE_LABELS_FILE, 'r') as dune_labels_file:
+            dune_labels = json.load(dune_labels_file)
+
+    return dune_labels
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # decode_data
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-def decode_data(contract_address, data, blockchain, id, labels):
+def decode_data(contract_address, data, blockchain, id, dune_labels):
     web3 = get_node(blockchain)
     
     # If the contract does not have the function, it checks if there is a proxy implementation
@@ -136,24 +172,38 @@ def decode_data(contract_address, data, blockchain, id, labels):
                         break
                     except:
                         continue
-                        
+                
+                if signature == '':
+                    # Special cases where the function is not in the proxy nor in the implementation. 
+                    # Example: Compound v3 Comets function allow(address,bool) which is in the cUSDCv3 Ext contract.
+                    try:
+                        proxy_impl_address = target_contract.functions.extensionDelegate().call()
+                        target_contract = get_contract_proxy_abi(func_params['targetAddress'], proxy_impl_address, blockchain, web3=web3)
+                        for selector_name in selector_names:
+                            try:
+                                getattr(target_contract.functions, selector_name['name'][:selector_name['name'].index('(')])
+                                signature = selector_name['name']
+                                break
+                            except:
+                                continue
+                    except:
+                            continue
+
                 description = ''
                 if signature != '':
                     # A function can have multiple version with the same name but different amount of parameters.
-                    matching_functions = get_abi_function_signatures(func_params['targetAddress'], blockchain, func_names=[signature[:signature.index('(')]])
+                    if proxy_impl_address != Address.ZERO:
+                        matching_functions = get_abi_function_signatures(func_params['targetAddress'], blockchain, abi_address=proxy_impl_address, func_names=[signature[:signature.index('(')]])
+                    else:
+                        matching_functions = get_abi_function_signatures(func_params['targetAddress'], blockchain, func_names=[signature[:signature.index('(')]])
+                    
                     for matching_function in matching_functions:
                         if matching_function['signature'] == signature:
                             break
                     description = get_function_description(signature, matching_function['components_names'])
                 else:
-                    # Special cases where the function is not in the proxy nor in the implementation. 
-                    # Example: Compound v3 Comets function allow(address,bool) which is in the cUSDCv3 Ext contract.
-                    if selector_names[0]['name'] == 'allow(address,bool)':
-                        signature = 'allow(address,bool)'
-                        description = 'allow(address manager, bool isAllowed_)'
-                    else:
-                        signature = 'Unknown'
-                        description = 'Unknown'
+                    signature = 'Unknown'
+                    description = 'Unknown'
 
                 func_params['functionSig'] = {
                     'selector': selector,
@@ -185,7 +235,7 @@ def decode_data(contract_address, data, blockchain, id, labels):
         params[func_param] = func_params[func_param]
         if web3.is_address(func_params[func_param]):
             try:
-                params[func_param+'Name'] = labels[blockchain][str(func_params[func_param]).lower()]['label']
+                params[func_param+'Name'] = dune_labels[str(func_params[func_param]).lower()]
             except:
                 params[func_param+'Name'] = 'Unknown'
 
