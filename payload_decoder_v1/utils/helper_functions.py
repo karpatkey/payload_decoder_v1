@@ -110,7 +110,7 @@ def dune_query():
     dune_labels = {}
 
     query = QueryBase(
-    name="Ethereum - Identifier Labels",
+    name="ZRM - ETH - Identifier Labels (API)",
     query_id=3173156)
 
     config_api_keys = get_api_keys_from_config()
