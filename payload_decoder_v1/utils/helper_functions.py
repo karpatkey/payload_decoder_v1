@@ -245,6 +245,7 @@ def decode_data(contract_address, data, blockchain, id, dune_labels):
         'contractName': contract_name,
         'functionSignature': func_sig,
         'functionDescription': func_desc,
+        'functionSelector': web3.keccak(text=func_sig).hex()[:10],
         'params': params,
     }
 
