@@ -65,15 +65,16 @@ function scopeTarget(
 
 ```json
 {
-    "id": 5,
+    "id": 80,
     "targetAddress": "0xf20325cf84b72e8BBF8D8984B8f0059B984B390B",
     "contractName": "Roles",
     "functionSignature": "scopeTarget(uint16,address)",
     "functionDescription": "scopeTarget(uint16 role, address targetAddress)",
+    "functionSelector": "0x5e826695",
     "params": {
         "role": 1,
         "targetAddress": "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
-        "targetAddressName": "Balancer: Vault"
+        "targetAddressName": "Balancer_v2: Vault"
     }
 }
 ```
@@ -96,15 +97,16 @@ function revokeTarget(
 
 ```json
 {
-    "id": 6,
+    "id": 30,
     "targetAddress": "0xf20325cf84b72e8BBF8D8984B8f0059B984B390B",
     "contractName": "Roles",
     "functionSignature": "revokeTarget(uint16,address)",
     "functionDescription": "revokeTarget(uint16 role, address targetAddress)",
+    "functionSelector": "0x51fa1d73",
     "params": {
         "role": 1,
-        "targetAddress": "0xe4683Fe8F53da14cA5DAc4251EaDFb3aa614d528",
-        "targetAddressName": "Unknown"
+        "targetAddress": "0x59D66C58E83A26d6a0E35114323f65c3945c89c1",
+        "targetAddressName": "Aura_finance: auraB_stETH_STABLE_REWARDER"
     }
 }
 ```
@@ -130,19 +132,20 @@ function scopeAllowFunction(
 
 ```json
 {
-    "id": 10,
-    "targetAddress": "0xf20325cf84b72e8BBF8D8984B8f0059B984B390B",
+    "id": 38,
+    "targetAddress": "0xd8dd9164E765bEF903E429c9462E51F0Ea8514F9",
     "contractName": "Roles",
     "functionSignature": "scopeAllowFunction(uint16,address,bytes4,uint8)",
     "functionDescription": "scopeAllowFunction(uint16 role, address targetAddress, bytes4 functionSig, uint8 options)",
+    "functionSelector": "0x2fcf52d1",
     "params": {
         "role": 1,
-        "targetAddress": "0xA96A65c051bF88B4095Ee1f2451C2A9d43F53Ae2",
-        "targetAddressName": "Curve.fi: aETHc Pool",
+        "targetAddress": "0xDD3f50F8A6CafbE9b31a427582963f465E745AF8",
+        "targetAddressName": "Rocketpool: RocketDepositPool",
         "functionSig": {
-            "selector": "0x3df02124",
-            "signature": "exchange(int128,int128,uint256,uint256)",
-            "description": "exchange(int128 i, int128 j, uint256 dx, uint256 min_dy)"
+            "selector": "0xd0e30db0",
+            "signature": "deposit()",
+            "description": "deposit()"
         },
         "options": 1
     }
@@ -169,19 +172,20 @@ function scopeRevokeFunction(
 
 ```json
 {
-    "id": 11,
+    "id": 31,
     "targetAddress": "0xf20325cf84b72e8BBF8D8984B8f0059B984B390B",
     "contractName": "Roles",
     "functionSignature": "scopeRevokeFunction(uint16,address,bytes4)",
     "functionDescription": "scopeRevokeFunction(uint16 role, address targetAddress, bytes4 functionSig)",
+    "functionSelector": "0x2933ef1c",
     "params": {
         "role": 1,
-        "targetAddress": "0x0052688295413b32626D226a205b95cDB337DE86",
-        "targetAddressName": "Unknown",
+        "targetAddress": "0x827179dD56d07A7eeA32e3873493835da2866976",
+        "targetAddressName": "Sushi: RouteProcessor3",
         "functionSig": {
-            "selector": "0xb6b55f25",
-            "signature": "deposit(uint256)",
-            "description": "deposit(uint256 _value)"
+            "selector": "0x2646478b",
+            "signature": "processRoute(address,uint256,address,uint256,address,bytes)",
+            "description": "processRoute(address tokenIn, uint256 amountIn, address tokenOut, uint256 amountOutMin, address to, bytes route)"
         }
     }
 }
@@ -212,24 +216,41 @@ function scopeFunction(
 
 ```json
 {
-    "id": 12,
-    "targetAddress": "0xf20325cf84b72e8BBF8D8984B8f0059B984B390B",
+    "id": 24,
+    "targetAddress": "0xd8dd9164E765bEF903E429c9462E51F0Ea8514F9",
     "contractName": "Roles",
     "functionSignature": "scopeFunction(uint16,address,bytes4,bool[],uint8[],uint8[],bytes[],uint8)",
     "functionDescription": "scopeFunction(uint16 role, address targetAddress, bytes4 functionSig, bool[] isParamScoped, uint8[] paramType, uint8[] paramComp, bytes[] compValue, uint8 options)",
+    "functionSelector": "0x33a0480c",
     "params": {
         "role": 1,
-        "targetAddress": "0xA57b8d98dAE62B26Ec3bcC4a365338157060B234",
-        "targetAddressName": "Aura: Booster",
+        "targetAddress": "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+        "targetAddressName": "Aave_v3: Pool",
         "functionSig": {
-            "selector": "0x43a0d066",
-            "signature": "deposit(uint256,uint256,bool)",
-            "description": "deposit(uint256 _pid, uint256 _amount, bool _stake)"
+            "selector": "0x617ba037",
+            "signature": "supply(address,uint256,address,uint16)",
+            "description": "supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode)"
         },
-        "isParamScoped": [],
-        "paramType": [],
-        "paramComp": [],
-        "compValue": [],
+        "isParamScoped": [
+            false,
+            false,
+            true
+        ],
+        "paramType": [
+            "0: Static",
+            "0: Static",
+            "0: Static"
+        ],
+        "paramComp": [
+            "0: EqualTo",
+            "0: EqualTo",
+            "0: EqualTo"
+        ],
+        "compValue": [
+            "0x",
+            "0x",
+            "0x0000000000000000000000000efccbb9e2c09ea29551879bd9da32362b32fc89"
+        ],
         "options": 0
     }
 }
@@ -255,25 +276,26 @@ function scopeParameterAsOneOf(
 
 ```json
 {
-    "id": 14,
-    "targetAddress": "0xf20325cf84b72e8BBF8D8984B8f0059B984B390B",
+    "id": 25,
+    "targetAddress": "0xd8dd9164E765bEF903E429c9462E51F0Ea8514F9",
     "contractName": "Roles",
     "functionSignature": "scopeParameterAsOneOf(uint16,address,bytes4,uint256,uint8,bytes[])",
     "functionDescription": "scopeParameterAsOneOf(uint16 role, address targetAddress, bytes4 functionSig, uint256 paramIndex, uint8 paramType, bytes[] compValues)",
+    "functionSelector": "0x93933772",
     "params": {
         "role": 1,
-        "targetAddress": "0xA57b8d98dAE62B26Ec3bcC4a365338157060B234",
-        "targetAddressName": "Aura: Booster",
+        "targetAddress": "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+        "targetAddressName": "Aave_v3: Pool",
         "functionSig": {
-            "selector": "0x43a0d066",
-            "signature": "deposit(uint256,uint256,bool)",
-            "description": "deposit(uint256 _pid, uint256 _amount, bool _stake)"
+            "selector": "0x617ba037",
+            "signature": "supply(address,uint256,address,uint16)",
+            "description": "supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode)"
         },
         "paramIndex": 0,
         "paramType": "0: Static",
         "compValues": [
-            "0x0000000000000000000000000000000000000000000000000000000000000099",
-            "0x000000000000000000000000000000000000000000000000000000000000006d"
+            "0x0000000000000000000000006b175474e89094c44da98b954eedeac495271d0f",
+            "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
         ]
     }
 }
@@ -297,6 +319,7 @@ function scopeParameterAsOneOf(
 
 
 **NOTES:**
+- Installing `requirements.txt` seems to fail with `python==3.12.0` but works fine with `python==3.11.5`
 - Dune API request consumes approximately 800 credits
 - `dune_labels.json` can't be and empty file (at most an emtpy JSON: `{}`)
 
