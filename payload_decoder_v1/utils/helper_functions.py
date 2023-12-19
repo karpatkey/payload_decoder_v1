@@ -34,6 +34,12 @@ Comparison = {
     2: 'LessThan',
     3: 'OneOf'
 }
+ExecutionOptions = {
+    0: 'None',
+    1: 'Send',
+    2: 'DelegateCall',
+    3: 'Both'
+}
 
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -145,6 +151,9 @@ def decode_data(contract_address, data, blockchain, id, dune_labels):
     func_obj, func_params = contract.decode_function_input(data)
 
     func_sig = requests.get("https://api.openchain.xyz/signature-database/v1/lookup?function=%s&filter=true" % data[:10]).json()['result']['function'][data[:10]][0]['name']
+    if func_sig == None:
+        func_sig = requests.get("https://www.4byte.directory/api/v1/signatures/?hex_signature=%s" % data[:10]).json()['results'][0]['text_signature']
+    
     components_names = [func_param for func_param in func_params]
     
     func_desc = get_function_description(func_sig, components_names)
@@ -155,6 +164,8 @@ def decode_data(contract_address, data, blockchain, id, dune_labels):
             if func_param == 'functionSig':
                 selector = func_params[func_param]
                 selector_names = requests.get("https://api.openchain.xyz/signature-database/v1/lookup?function=%s&filter=true" % selector).json()['result']['function'][selector]
+                if selector_names == None:
+                    selector_names = requests.get("https://www.4byte.directory/api/v1/signatures/?hex_signature=%s" % selector).json()['results']
                 
                 # If the contract does not have the function, it checks if there is a proxy implementation
                 proxy_impl_address = search_proxy_impl_address(func_params['targetAddress'], blockchain, web3=web3)
@@ -171,7 +182,12 @@ def decode_data(contract_address, data, blockchain, id, dune_labels):
                         signature = selector_name['name']
                         break
                     except:
-                        continue
+                        try:
+                          getattr(target_contract.functions, selector_name['text_signature'][:selector_name['text_signature'].index('(')])
+                          signature = selector_name['text_signature']
+                          break
+                        except:
+                            continue
                 
                 if signature == '':
                     # Special cases where the function is not in the proxy nor in the implementation. 
@@ -224,6 +240,8 @@ def decode_data(contract_address, data, blockchain, id, dune_labels):
         else:
             if func_param == 'paramType':
                 func_params[func_param] = str(func_params[func_param]) + ': ' + ParameterType[func_params[func_param]]
+            elif func_param == 'options':
+                func_params[func_param] = str(func_params[func_param]) + ': ' + ExecutionOptions[func_params[func_param]]
     
     try:
         contract_name = contract.functions.symbol().call()
