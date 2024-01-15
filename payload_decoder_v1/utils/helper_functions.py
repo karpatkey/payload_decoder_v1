@@ -1,6 +1,6 @@
 from defyes.functions import get_abi_function_signatures, get_contract, get_contract_proxy_abi, get_node, search_proxy_impl_address
 from karpatkit.constants import Address, Chain
-from defyes.explorer import ChainExplorer
+from karpatkit.explorer import ChainExplorer
 import requests
 import json
 from pathlib import Path
